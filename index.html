@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="terminal-header">
+                <div class="terminal-buttons">
+                    <span class="btn btn-red"></span>
+                    <span class="btn btn-yellow"></span>
+                    <span class="btn btn-green"></span>
+                </div>
+                <span class="terminal-title">cybersecurity@portfolio:~$</span>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h1 class="glitch" data-text="Cybersecurity Enthusiast">Cybersecurity Enthusiast</h1>
+                <p class="subtitle">Aspiring SOC Analyst</p>
+                <div class="typing-effect">
+                    <span class="cursor">|</span>
+                </div>
+            </section>
+
+            <section class="about">
+                <h2><span class="prompt">$</span> About</h2>
+                <div class="content-box">
+                    <p>I'm a cybersecurity enthusiast and an aspiring SOC Analyst.</p>
+                    <p>I study every day to improve my skills in cybersecurity, network defense, and incident analysis.</p>
+                </div>
+            </section>
+
+            <section class="certifications">
+                <h2><span class="prompt">$</span> Certifications</h2>
+                <div class="content-box">
+                    <div class="cert-item">
+                        <span class="cert-icon">🎓</span>
+                        <span>Cisco Certified Network Associate (CCNA)</span>
+                    </div>
+                    <div class="cert-item">
+                        <span class="cert-icon">🎓</span>
+                        <span>CompTIA CySA+ (Cybersecurity Analyst)</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="skills">
+                <h2><span class="prompt">$</span> Skills</h2>
+                <div class="content-box">
+                    <div class="skill-grid">
+                        <div class="skill-item">
+                            <span class="skill-icon">🔐</span>
+                            <span>SOC & Incident Analysis</span>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-icon">🧩</span>
+                            <span>Network Security</span>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-icon">💻</span>
+                            <span>Linux & Windows Systems</span>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-icon">🐍</span>
+                            <span>Python Automation</span>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-icon">🌐</span>
+                            <span>Networking Fundamentals (CCNA knowledge)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="contact">
+                <h2><span class="prompt">$</span> Contact</h2>
+                <div class="content-box">
+                    <p>Ready to connect and collaborate on cybersecurity projects.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="terminal-footer">
+                <span class="prompt">$</span> <span class="blink">_</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Simple typing effect
+        const phrases = [
+            "Analyzing threats...",
+            "Monitoring networks...",
+            "Investigating incidents...",
+            "Securing systems...",
+        ];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingElement = document.querySelector('.typing-effect');
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 50 : 100;
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+
+        // Start typing effect after a short delay
+        setTimeout(type, 1000);
+    </script>
+</body>
+</html>
+
