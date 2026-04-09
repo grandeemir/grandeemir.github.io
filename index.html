@@ -4,441 +4,820 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Emircan Özkara — Cloud Engineer</title>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #0a0a0a;
-  --paper: #f5f0e8;
-  --paper2: #ede8df;
-  --lime: #c8f53b;
-  --orange: #ff5c00;
-  --blue: #0057ff;
-  --mid: #888074;
-  --aws: #ff9900;
-  --azure: #0078d4;
-  --tf: #7b42bc;
+  --bg:     #020508;
+  --bg2:    #050c12;
+  --panel:  #071018;
+  --cyan:   #00e5ff;
+  --cyan2:  #00b8d4;
+  --cyan3:  rgba(0,229,255,0.08);
+  --green:  #00ff9d;
+  --orange: #ff9900;
+  --tf:     #a970ff;
+  --text:   #c8dde8;
+  --dim:    #4a6070;
+  --border: rgba(0,229,255,0.15);
+  --bdr:    1px solid rgba(0,229,255,0.15);
 }
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-body { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
 
-/* ══ CURSOR ══
-   Single element, moved purely via CSS custom properties.
-   translate() keeps centering rock-solid at any size.
-   Starts invisible; fades in on first mousemove.
-*/
-html { cursor: none; }
-* { cursor: none !important; }
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; overflow-x:hidden; }
+* { cursor:none !important; }
 
+/* ── SCANLINES ── */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events:none;z-index:9998;
+}
+
+/* ── GRID OVERLAY ── */
+body::after {
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+}
+
+/* ── CURSOR ── */
 #cur {
-  position: fixed;
-  top: 0; left: 0;
-  width: 36px; height: 36px;
-  pointer-events: none;
-  z-index: 999999;
-  will-change: transform;
-  /* translate moves to mouse position AND centres the element */
-  transform: translate(calc(var(--cx, -200px) - 50%), calc(var(--cy, -200px) - 50%));
-  opacity: 0;
-  transition: opacity 0.3s, width 0.2s, height 0.2s;
+  position:fixed;top:0;left:0;
+  pointer-events:none;z-index:999999;
+  opacity:0;transition:opacity 0.3s;
+  transform:translate(calc(var(--cx,-300px) - 50%), calc(var(--cy,-300px) - 50%));
 }
-#cur::before {
-  /* outer ring */
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2.5px solid var(--ink);
-  transition: border-color 0.2s, background 0.2s, inset 0.2s;
+/* crosshair shape */
+#cur::before,#cur::after { content:''; position:absolute; background:var(--cyan); }
+#cur::before { width:1px; height:20px; top:50%; left:50%; transform:translate(-50%,-50%); }
+#cur::after  { width:20px; height:1px; top:50%; left:50%; transform:translate(-50%,-50%); }
+.cur-ring {
+  position:fixed;top:0;left:0;
+  width:36px;height:36px;
+  border:1px solid var(--cyan);
+  pointer-events:none;z-index:999998;
+  opacity:0;transition:opacity 0.3s, width 0.2s, height 0.2s;
+  transform:translate(calc(var(--rx,-300px) - 50%), calc(var(--ry,-300px) - 50%));
 }
-#cur::after {
-  /* inner dot */
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 7px; height: 7px;
-  margin: -3.5px 0 0 -3.5px;
-  border-radius: 50%;
-  background: var(--ink);
-  transition: background 0.2s;
-}
-/* hover state — grows ring, tints lime */
-#cur.hov::before { inset: -10px; background: rgba(200,245,59,0.12); border-color: var(--lime); }
-/* dark-zone — flip colours to lime */
-body.dz #cur::before { border-color: var(--lime); }
-body.dz #cur::after  { background: var(--lime); }
-body.dz #cur.hov::before { background: rgba(200,245,59,0.18); }
+.cur-ring.hov { width:54px;height:54px;background:rgba(0,229,255,0.05); }
 
 /* ── NAV ── */
 nav {
-  position:fixed; top:0; width:100%; z-index:100;
-  display:flex; justify-content:space-between; align-items:center;
-  padding:1.25rem 3rem; background:var(--paper); border-bottom:2px solid var(--ink);
+  position:fixed;top:0;width:100%;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 3rem;height:52px;
+  background:rgba(2,5,8,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:var(--bdr);
 }
-.nav-logo { font-family:'Unbounded',sans-serif; font-weight:900; font-size:0.85rem; letter-spacing:-0.02em; text-transform:uppercase; }
-.nav-right { display:flex; gap:2.5rem; align-items:center; }
-.nav-right a { font-size:0.78rem; font-weight:500; text-decoration:none; color:var(--mid); letter-spacing:0.05em; text-transform:uppercase; transition:color 0.2s; }
-.nav-right a:hover { color:var(--ink); }
-.nav-dot { width:10px; height:10px; background:var(--lime); border-radius:50%; border:2px solid var(--ink); animation:pulse 2s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.4);} }
+.nav-logo {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.82rem;color:var(--cyan);
+  letter-spacing:0.08em;
+  display:flex;align-items:center;gap:0.6rem;
+}
+.nav-logo::before {
+  content:'>';
+  color:var(--green);
+}
+.nav-links { display:flex;list-style:none;gap:0; }
+.nav-links li { border-left:var(--bdr); }
+.nav-links a {
+  display:flex;align-items:center;height:52px;
+  padding:0 1.4rem;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.7rem;color:var(--dim);
+  letter-spacing:0.12em;text-decoration:none;
+  text-transform:uppercase;
+  transition:color 0.2s,background 0.2s;
+  position:relative;
+}
+.nav-links a::before {
+  content:attr(data-n);
+  color:var(--cyan);margin-right:0.4rem;opacity:0.5;
+  font-size:0.6rem;
+}
+.nav-links a:hover { color:var(--cyan);background:var(--cyan3); }
+.nav-right {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.65rem;color:var(--dim);
+  letter-spacing:0.1em;
+  display:flex;align-items:center;gap:0.6rem;
+}
+.nav-right::before {
+  content:'';width:6px;height:6px;
+  border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
 /* ── HERO ── */
-#hero { min-height:100vh; padding:8rem 3rem 4rem; display:flex; flex-direction:column; justify-content:space-between; border-bottom:2px solid var(--ink); overflow:hidden; }
-.hero-top { display:flex; justify-content:space-between; align-items:flex-start; gap:2rem; }
-.hero-badge { display:inline-flex; align-items:center; gap:0.5rem; background:var(--ink); color:var(--lime); font-size:0.7rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; padding:0.4rem 1rem; border-radius:100px; margin-bottom:2rem; }
-.hero-name { font-family:'Unbounded',sans-serif; font-weight:900; line-height:0.9; letter-spacing:-0.04em; text-transform:uppercase; }
-.name-line { display:block; font-size:clamp(4rem,10.5vw,10.5rem); }
-.name-line .stroke { -webkit-text-stroke:3px var(--ink); color:transparent; }
-.name-line .filled { color:var(--ink); }
-.hero-desc { max-width:380px; padding-top:1rem; text-align:right; }
-.hero-desc p { font-size:1rem; line-height:1.7; color:var(--mid); font-weight:300; margin-bottom:1.5rem; }
-.hero-desc p strong { color:var(--ink); font-weight:500; }
-.hero-bottom { display:flex; justify-content:space-between; align-items:flex-end; padding-top:3rem; border-top:1px solid rgba(0,0,0,0.15); margin-top:3rem; }
-.hero-certs-preview { display:flex; gap:0.75rem; flex-wrap:wrap; }
-.cert-pill { font-size:0.7rem; font-weight:700; letter-spacing:0.08em; padding:0.4rem 0.9rem; border-radius:100px; border:2px solid currentColor; text-transform:uppercase; }
-.cert-pill.aws { color:var(--aws); }
-.cert-pill.azure { color:var(--azure); }
-.cert-pill.tf { color:var(--tf); }
-.hero-cta { display:flex; gap:1rem; align-items:center; }
-.btn { display:inline-flex; align-items:center; gap:0.5rem; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:700; text-decoration:none; padding:0.85rem 1.75rem; border-radius:100px; transition:all 0.2s; letter-spacing:0.02em; border:2px solid var(--ink); }
-.btn-fill { background:var(--ink); color:var(--lime); }
-.btn-fill:hover { background:var(--lime); color:var(--ink); }
-.btn-ghost { background:transparent; color:var(--ink); }
-.btn-ghost:hover { background:var(--ink); color:var(--paper); }
+#hero {
+  position:relative;z-index:1;
+  min-height:100vh;
+  padding:52px 0 0;
+  display:flex;flex-direction:column;
+  border-bottom:var(--bdr);
+}
 
-/* ── STRIP ── */
-.strip { background:var(--lime); border-bottom:2px solid var(--ink); display:flex; overflow:hidden; }
-.strip-inner { display:flex; animation:marquee 22s linear infinite; white-space:nowrap; }
-.strip-item { display:flex; align-items:center; gap:1.5rem; padding:1rem 2.5rem; font-family:'Unbounded',sans-serif; font-weight:900; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink); border-right:2px solid var(--ink); }
-.strip-item span { color:var(--orange); }
-@keyframes marquee { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+.hero-top-bar {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.75rem 3rem;
+  border-bottom:var(--bdr);
+  background:var(--bg2);
+}
+.htb-left {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.65rem;color:var(--dim);letter-spacing:0.1em;
+  display:flex;align-items:center;gap:1.5rem;
+}
+.htb-tag {
+  color:var(--cyan);padding:0.2rem 0.6rem;
+  border:var(--bdr);font-size:0.62rem;
+}
+
+/* BIG NAME AREA */
+.hero-name-section {
+  flex:1;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:4rem 3rem 2rem;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Glow orb */
+.hero-glow {
+  position:absolute;
+  top:50%;left:40%;
+  transform:translate(-50%,-50%);
+  width:700px;height:400px;
+  background:radial-gradient(ellipse, rgba(0,229,255,0.05) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+.hero-pre {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.7rem;color:var(--green);
+  letter-spacing:0.15em;margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:0.75rem;
+}
+.hero-pre::before{content:'//'; color:var(--dim); margin-right:0.25rem;}
+
+/* EMIRCAN — one word, split styling within */
+.hero-name {
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+  line-height:0.88;
+  letter-spacing:-0.02em;
+  text-transform:uppercase;
+  margin-bottom:1.5rem;
+}
+.hn-row { display:block; }
+/* EMIRCAN row: each letter individually sized */
+.hn-emircan {
+  font-size:clamp(5rem,13vw,14rem);
+  display:inline;
+}
+/* Split: EMIR solid, CAN outline+cyan */
+.hn-emir { color:var(--text); }
+.hn-can  {
+  color:transparent;
+  -webkit-text-stroke:2px var(--cyan);
+  text-shadow:0 0 40px rgba(0,229,255,0.4);
+}
+/* ÖZKARA row */
+.hn-ozkara {
+  font-size:clamp(5rem,13vw,14rem);
+  display:inline;
+}
+.hn-oz   { color:var(--cyan); text-shadow:0 0 30px rgba(0,229,255,0.5); }
+.hn-kara { color:var(--text); }
+
+.hero-tagline {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.78rem;color:var(--dim);
+  letter-spacing:0.1em;margin-bottom:2.5rem;
+  max-width:500px;line-height:1.7;
+}
+.hero-tagline span { color:var(--cyan); }
+
+.hero-btns { display:flex;gap:1rem;flex-wrap:wrap; }
+.btn {
+  display:inline-flex;align-items:center;gap:0.6rem;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.82rem;font-weight:600;
+  letter-spacing:0.18em;text-transform:uppercase;
+  text-decoration:none;padding:0.75rem 1.75rem;
+  transition:all 0.2s;border:var(--bdr);
+  clip-path:polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.btn-cyan  { background:var(--cyan);color:var(--bg);border-color:var(--cyan); }
+.btn-cyan:hover  { background:var(--cyan2);box-shadow:0 0 20px rgba(0,229,255,0.4); }
+.btn-ghost { background:transparent;color:var(--cyan); }
+.btn-ghost:hover { background:var(--cyan3);box-shadow:0 0 15px rgba(0,229,255,0.2); }
+
+.hero-bottom-bar {
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:var(--bdr);
+}
+.hbb-cell {
+  padding:1.25rem 2rem;
+  border-right:var(--bdr);
+  display:flex;flex-direction:column;gap:0.3rem;
+}
+.hbb-cell:last-child{border-right:none;}
+.hbb-n {
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:1.8rem;
+  color:var(--cyan);line-height:1;
+  text-shadow:0 0 20px rgba(0,229,255,0.5);
+}
+.hbb-l {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.6rem;color:var(--dim);
+  letter-spacing:0.15em;text-transform:uppercase;
+}
 
 /* ── SECTIONS ── */
-section { border-bottom:2px solid var(--ink); }
-.section-inner { padding:5rem 3rem; }
-.section-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4rem; gap:2rem; }
-.section-num { font-family:'Unbounded',sans-serif; font-size:0.7rem; font-weight:700; color:var(--mid); letter-spacing:0.2em; padding-top:0.5rem; }
-.section-title { font-family:'Unbounded',sans-serif; font-size:clamp(2.5rem,5vw,5rem); font-weight:900; line-height:0.95; letter-spacing:-0.03em; text-transform:uppercase; }
-.section-subtitle { max-width:420px; font-size:0.95rem; line-height:1.7; color:var(--mid); font-weight:300; text-align:right; padding-top:0.5rem; }
+.section { position:relative;z-index:1;border-bottom:var(--bdr); }
+.s-head {
+  display:grid;grid-template-columns:200px 1fr;
+  border-bottom:var(--bdr);
+}
+.s-label {
+  padding:2rem;border-right:var(--bdr);
+  background:var(--bg2);
+  display:flex;flex-direction:column;gap:0.4rem;
+  justify-content:center;
+}
+.s-num {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.62rem;color:var(--cyan);
+  letter-spacing:0.2em;opacity:0.6;
+}
+.s-title {
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:2rem;
+  letter-spacing:0.05em;text-transform:uppercase;
+  color:var(--text);line-height:1;
+}
+.s-info {
+  padding:2rem 3rem;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:2rem;
+}
+.s-sub {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.72rem;color:var(--dim);
+  letter-spacing:0.06em;line-height:1.7;
+  max-width:480px;
+}
+.s-body { padding:3rem; }
 
-/* ── ABOUT (dark) ── */
-#about { background:var(--ink); color:var(--paper); }
-#about .section-num { color:var(--lime); opacity:0.6; }
-#about .section-title { color:var(--paper); }
-#about .section-subtitle { color:rgba(245,240,232,0.5); }
-.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; }
-.about-text p { font-size:1.05rem; line-height:1.8; color:rgba(245,240,232,0.7); margin-bottom:1.5rem; font-weight:300; }
-.about-text p strong { color:var(--lime); font-weight:500; }
-.about-stats { display:grid; grid-template-columns:1fr 1fr; gap:2px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.08); border-radius:16px; overflow:hidden; }
-.stat-box { padding:2rem; background:rgba(255,255,255,0.04); transition:background 0.2s; }
-.stat-box:hover { background:rgba(200,245,59,0.08); }
-.stat-n { font-family:'Unbounded',sans-serif; font-size:3.5rem; font-weight:900; color:var(--lime); line-height:1; margin-bottom:0.5rem; }
-.stat-l { font-size:0.8rem; color:rgba(245,240,232,0.45); text-transform:uppercase; letter-spacing:0.1em; }
+/* ── ABOUT ── */
+#about { background:var(--bg2); }
+.about-grid {
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:3rem;align-items:start;
+}
+.about-text p {
+  font-size:1.02rem;line-height:1.85;
+  color:rgba(200,221,232,0.65);
+  font-weight:400;margin-bottom:1.25rem;
+}
+.about-text p strong { color:var(--text);font-weight:600; }
 
-/* ── CERTS ── */
-#certifications { background:var(--paper2); }
-.cert-grid { display:grid; grid-template-columns:repeat(4,1fr); border:2px solid var(--ink); border-radius:20px; overflow:hidden; }
-.cert-card { padding:2rem 1.5rem; border-right:2px solid var(--ink); transition:background 0.2s; display:flex; flex-direction:column; gap:1.25rem; }
-.cert-card:last-child { border-right:none; }
-.cert-card:hover { background:var(--lime); }
-.cert-badge-img { width:110px; height:110px; object-fit:contain; display:block; transition:transform 0.3s; }
-.cert-card:hover .cert-badge-img { transform:scale(1.08) rotate(-3deg); }
-.cert-vendor-badge { font-size:0.62rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; padding:0.25rem 0.7rem; border-radius:100px; border:2px solid currentColor; display:inline-block; width:fit-content; }
-.cert-vendor-badge.aws { color:var(--aws); }
-.cert-vendor-badge.azure { color:var(--azure); }
-.cert-vendor-badge.tf { color:var(--tf); }
-.cert-name { font-family:'Unbounded',sans-serif; font-size:0.82rem; font-weight:700; line-height:1.3; letter-spacing:-0.01em; }
-.cert-code-label { font-size:0.72rem; color:var(--mid); letter-spacing:0.05em; margin-top:0.2rem; }
+.stat-panel {
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--border);
+  border:var(--bdr);
+}
+.stat-cell {
+  background:var(--panel);
+  padding:2rem 1.75rem;
+  transition:background 0.2s;
+  position:relative;overflow:hidden;
+}
+.stat-cell::before {
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,var(--cyan),transparent);
+  opacity:0;transition:opacity 0.2s;
+}
+.stat-cell:hover { background:rgba(0,229,255,0.05); }
+.stat-cell:hover::before { opacity:1; }
+.stat-n {
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:3rem;
+  color:var(--cyan);line-height:1;margin-bottom:0.3rem;
+  text-shadow:0 0 20px rgba(0,229,255,0.4);
+}
+.stat-l {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.62rem;color:var(--dim);
+  text-transform:uppercase;letter-spacing:0.12em;
+}
+
+/* ── CERTIFICATIONS ── */
+#certifications { background:var(--bg); }
+.cert-row {
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:var(--bdr);
+}
+.cert-card {
+  background:var(--panel);
+  padding:2.5rem 2rem;
+  display:flex;flex-direction:column;gap:1.75rem;
+  transition:background 0.25s;
+  position:relative;overflow:hidden;
+}
+/* Corner clip decoration */
+.cert-card::before {
+  content:'';position:absolute;
+  top:0;right:0;
+  width:0;height:0;
+  border-style:solid;
+  border-width:0 24px 24px 0;
+  border-color:transparent var(--bg) transparent transparent;
+  transition:border-color 0.2s;
+}
+.cert-card:hover { background:rgba(0,229,255,0.04); }
+.cert-card:hover::before { border-color:transparent rgba(0,229,255,0.2) transparent transparent; }
+
+/* Top line accent */
+.cert-card::after {
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px;
+  opacity:0.5;transition:opacity 0.2s;
+}
+.cert-card.aws-c::after { background:linear-gradient(90deg,var(--orange),transparent); }
+.cert-card.tf-c::after  { background:linear-gradient(90deg,var(--tf),transparent); }
+.cert-card:hover::after { opacity:1; }
+
+.cert-badge-img {
+  width:80px;height:80px;object-fit:contain;
+  transition:transform 0.3s,filter 0.3s;
+  filter:drop-shadow(0 0 10px rgba(0,229,255,0.15));
+}
+.cert-card:hover .cert-badge-img {
+  transform:scale(1.06);
+  filter:drop-shadow(0 0 20px rgba(0,229,255,0.3));
+}
+
+.cert-vendor {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.2em;
+  text-transform:uppercase;display:flex;align-items:center;gap:0.6rem;
+}
+.cert-vendor.aws { color:var(--orange); }
+.cert-vendor.tf  { color:var(--tf); }
+.cert-vendor-dot { width:4px;height:4px;border-radius:50%;background:currentColor; }
+
+.cert-name {
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:1.3rem;
+  letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--text);line-height:1.15;
+}
+.cert-code {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.68rem;color:var(--dim);
+  letter-spacing:0.12em;margin-top:0.3rem;
+}
+
 /* ── PROJECTS ── */
-.projects-list { display:flex; flex-direction:column; border:2px solid var(--ink); border-radius:20px; overflow:hidden; }
-.project-row { display:grid; grid-template-columns:80px 1fr auto; border-bottom:2px solid var(--ink); transition:background 0.2s; text-decoration:none; color:inherit; }
-.project-row:last-child { border-bottom:none; }
-.project-row:hover { background:var(--lime); }
-.project-num { padding:2rem; font-family:'Unbounded',sans-serif; font-size:0.7rem; font-weight:700; color:var(--mid); border-right:2px solid var(--ink); display:flex; align-items:center; justify-content:center; }
-.project-body { padding:2rem 2.5rem; border-right:2px solid var(--ink); }
-.project-title { font-family:'Unbounded',sans-serif; font-size:1.05rem; font-weight:700; letter-spacing:-0.02em; margin-bottom:0.6rem; }
-.project-desc { font-size:0.87rem; line-height:1.6; color:var(--mid); font-weight:300; max-width:600px; margin-bottom:1rem; }
-.project-tags { display:flex; flex-wrap:wrap; gap:0.4rem; }
-.ptag { font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:0.2rem 0.7rem; border-radius:100px; border:1.5px solid currentColor; }
-.ptag.aws { color:var(--aws); }
-.ptag.azure { color:var(--azure); }
-.ptag.tf { color:var(--tf); }
-.ptag.k8s { color:var(--blue); }
-.ptag.sec { color:var(--orange); }
-.ptag.py { color:#4CAF50; }
-.project-arrow { padding:2rem; display:flex; align-items:center; justify-content:center; font-size:1.5rem; transition:transform 0.2s; }
-.project-row:hover .project-arrow { transform:translate(4px,-4px); }
+#projects { background:var(--bg2); }
+.proj-list { display:flex;flex-direction:column; }
+.proj-item {
+  display:grid;grid-template-columns:64px 1fr 48px;
+  border-bottom:var(--bdr);
+  transition:background 0.2s;
+  text-decoration:none;color:inherit;
+  position:relative;
+}
+.proj-item:last-child { border-bottom:none; }
+.proj-item::before {
+  content:'';position:absolute;
+  left:0;top:0;bottom:0;width:2px;
+  background:var(--cyan);
+  transform:scaleY(0);transition:transform 0.25s;
+  transform-origin:bottom;
+}
+.proj-item:hover { background:rgba(0,229,255,0.03); }
+.proj-item:hover::before { transform:scaleY(1); }
 
-/* ── CONTACT (dark) ── */
-#contact { background:var(--ink); color:var(--paper); border-bottom:none; }
-#contact .section-num { color:var(--lime); opacity:0.6; }
-#contact .section-title { color:var(--paper); }
-#contact .section-subtitle { color:rgba(245,240,232,0.45); }
-.contact-big { font-family:'Unbounded',sans-serif; font-size:clamp(1.4rem,4vw,4.5rem); font-weight:900; line-height:1; letter-spacing:-0.04em; color:var(--lime); text-transform:uppercase; margin-bottom:3rem; display:block; text-decoration:none; word-break:break-all; transition:letter-spacing 0.3s; }
-.contact-big:hover { letter-spacing:0.01em; }
-.contact-links { display:flex; flex-wrap:wrap; gap:1rem; margin-top:3rem; padding-top:3rem; border-top:1px solid rgba(255,255,255,0.1); }
-.contact-link { display:inline-flex; align-items:center; gap:0.75rem; text-decoration:none; color:var(--paper); font-size:0.85rem; font-weight:500; padding:0.85rem 1.5rem; border:1.5px solid rgba(255,255,255,0.2); border-radius:100px; transition:all 0.2s; }
-.contact-link:hover { border-color:var(--lime); color:var(--lime); }
-.contact-link .icon { font-size:1.1rem; display:flex; align-items:center; }
+.pi-num {
+  padding:2rem 1rem;
+  border-right:var(--bdr);
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.65rem;color:var(--dim);
+  display:flex;align-items:center;justify-content:center;
+  letter-spacing:0.1em;
+}
+.pi-body { padding:2rem 2.5rem; }
+.pi-title {
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:1.25rem;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--text);margin-bottom:0.5rem;
+  transition:color 0.2s;
+}
+.proj-item:hover .pi-title { color:var(--cyan); }
+.pi-desc {
+  font-size:0.9rem;line-height:1.65;
+  color:rgba(200,221,232,0.5);
+  font-weight:400;max-width:640px;margin-bottom:1rem;
+}
+.pi-tags { display:flex;flex-wrap:wrap;gap:0.35rem; }
+.ptag {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.6rem;letter-spacing:0.1em;
+  text-transform:uppercase;padding:0.18rem 0.6rem;
+  border:var(--bdr);color:var(--dim);
+  transition:color 0.2s,border-color 0.2s;
+}
+.proj-item:hover .ptag { color:var(--cyan);border-color:rgba(0,229,255,0.3); }
+.ptag.aws { color:rgba(255,153,0,0.7);border-color:rgba(255,153,0,0.2); }
+.ptag.tf  { color:rgba(169,112,255,0.7);border-color:rgba(169,112,255,0.2); }
+.ptag.sec { color:rgba(0,255,157,0.7);border-color:rgba(0,255,157,0.2); }
+.ptag.iac { color:rgba(0,229,255,0.7);border-color:rgba(0,229,255,0.2); }
+
+.pi-arrow {
+  display:flex;align-items:center;justify-content:center;
+  border-left:var(--bdr);
+  color:var(--dim);font-size:1rem;
+  transition:color 0.2s,transform 0.2s;
+}
+.proj-item:hover .pi-arrow { color:var(--cyan);transform:translate(3px,-3px); }
+
+/* ── CONTACT ── */
+#contact { background:var(--bg); }
+.contact-grid {
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:0;border-top:var(--bdr);
+}
+.contact-left { padding:3rem;border-right:var(--bdr); }
+.big-email {
+  display:block;
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+  font-size:clamp(1.8rem,4vw,4rem);
+  letter-spacing:0.03em;text-transform:uppercase;
+  text-decoration:none;color:var(--cyan);
+  line-height:0.9;margin-bottom:3rem;
+  padding-bottom:3rem;border-bottom:var(--bdr);
+  transition:text-shadow 0.2s;
+  word-break:break-all;
+}
+.big-email:hover { text-shadow:0 0 40px rgba(0,229,255,0.6); }
+
+.soc-list { display:flex;flex-direction:column;gap:0; }
+.soc-link {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 0;border-bottom:var(--bdr);
+  text-decoration:none;color:var(--dim);
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.75rem;letter-spacing:0.08em;
+  transition:color 0.2s;
+}
+.soc-link:last-child{border-bottom:none;}
+.soc-link:hover { color:var(--cyan); }
+.soc-link-l { display:flex;align-items:center;gap:1rem; }
+.soc-ico {
+  width:30px;height:30px;
+  border:var(--bdr);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;
+  transition:background 0.2s,border-color 0.2s;
+}
+.soc-link:hover .soc-ico { background:var(--cyan3);border-color:var(--cyan); }
+.soc-arr { opacity:0.3;transition:opacity 0.2s,transform 0.2s;font-size:0.9rem; }
+.soc-link:hover .soc-arr { opacity:1;transform:translate(3px,-3px); }
+
+.contact-right { padding:3rem; }
+.contact-right p {
+  font-size:1rem;line-height:1.85;
+  color:rgba(200,221,232,0.55);
+  font-weight:400;margin-bottom:1.25rem;
+}
+.contact-right p strong { color:var(--text);font-weight:600; }
+.avail {
+  display:inline-flex;align-items:center;gap:0.7rem;
+  border:var(--bdr);padding:0.75rem 1.4rem;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--green);margin-top:1.5rem;
+}
+.avail::before {
+  content:'';width:6px;height:6px;
+  border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:pulse 2s ease-in-out infinite;
+}
 
 /* ── FOOTER ── */
-footer { background:var(--ink); color:rgba(245,240,232,0.3); padding:1.5rem 3rem; font-size:0.75rem; display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.08); }
-footer span { color:var(--lime); }
+footer {
+  position:relative;z-index:1;
+  background:var(--bg);border-top:var(--bdr);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.25rem 3rem;
+}
+.f-logo {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.72rem;color:var(--dim);letter-spacing:0.1em;
+}
+.f-logo span { color:var(--cyan); }
+.f-right {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.62rem;color:var(--dim);letter-spacing:0.12em;
+}
 
-/* ── HERO ANIMATIONS ── */
-@keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
-.hero-badge,.hero-name,.hero-desc,.hero-bottom { opacity:0; animation:fadeUp 0.7s ease forwards; }
-.hero-badge{animation-delay:0.05s;} .hero-name{animation-delay:0.15s;} .hero-desc{animation-delay:0.25s;} .hero-bottom{animation-delay:0.4s;}
+/* ── REVEAL ── */
+.reveal { opacity:0;transform:translateY(16px);transition:opacity 0.55s ease,transform 0.55s ease; }
+.reveal.on { opacity:1;transform:none; }
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
-  .cert-grid { grid-template-columns:repeat(3,1fr); }
-  .cert-card:nth-child(3){ border-right:none; }
-  .cert-card:nth-child(4){ border-top:2px solid var(--ink); }
-}
-@media(max-width:768px){
-  nav{padding:1rem 1.5rem;}
-  nav .nav-right a{display:none;}
-  .section-inner{padding:3.5rem 1.5rem;}
-  #hero{padding:7rem 1.5rem 3rem;}
-  .hero-top{flex-direction:column;}
-  .hero-desc{text-align:left;max-width:100%;}
-  .hero-bottom{flex-direction:column;gap:1.5rem;}
-  .section-header{flex-direction:column;}
-  .section-subtitle{text-align:left;}
-  .about-grid{grid-template-columns:1fr;gap:2.5rem;}
-  .project-row{grid-template-columns:50px 1fr;}
-  .project-arrow{display:none;}
-  .cert-grid{grid-template-columns:1fr 1fr;}
-  .cert-card{border-right:2px solid var(--ink)!important; border-bottom:2px solid var(--ink)!important;}
-  .cert-card:nth-child(even){border-right:none!important;}
+  nav { padding:0 1.5rem; }
+  .nav-links { display:none; }
+  .hero-name-section { padding:3rem 1.5rem 2rem; }
+  .s-body { padding:2rem 1.5rem; }
+  .s-head { grid-template-columns:100px 1fr; }
+  .s-info { flex-direction:column;align-items:flex-start;padding:1.5rem; }
+  .about-grid { grid-template-columns:1fr; }
+  .cert-row { grid-template-columns:1fr; }
+  .cert-card::before { display:none; }
+  .contact-grid { grid-template-columns:1fr; }
+  .contact-left { border-right:none;border-bottom:var(--bdr); }
+  .hero-bottom-bar { grid-template-columns:1fr 1fr; }
+  .proj-item { grid-template-columns:48px 1fr 40px; }
+  footer { padding:1.25rem 1.5rem; }
 }
 </style>
 </head>
 <body>
-
-<!-- Single cursor element -->
 <div id="cur"></div>
+<div class="cur-ring"></div>
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">Emircan Özkara</div>
-  <div class="nav-right">
-    <a href="#about">About</a>
-    <a href="#certifications">Certs</a>
-    <a href="#projects">Projects</a>
-    <a href="#contact">Contact</a>
-    <div class="nav-dot"></div>
-  </div>
+  <div class="nav-logo">EMIRCAN.ÖZKARA</div>
+  <ul class="nav-links">
+    <li><a href="#about" data-n="01">About</a></li>
+    <li><a href="#certifications" data-n="02">Certs</a></li>
+    <li><a href="#projects" data-n="03">Projects</a></li>
+    <li><a href="#contact" data-n="04">Contact</a></li>
+  </ul>
+  <div class="nav-right">SYS_ONLINE · AVAILABLE</div>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
-  <div>
-    <div class="hero-badge">⚡ Available for Work</div>
-    <div class="hero-top">
-      <h1 class="hero-name">
-        <span class="name-line"><span class="stroke">EMIR</span><span class="filled">CAN</span></span>
-        <span class="name-line"><span class="filled">OZ</span><span class="stroke">KARA</span></span>
-      </h1>
-      <div class="hero-desc">
-        <p>
-          Cloud Security Engineer specializing in <strong>AWS</strong> and <strong>Azure</strong>, with expertise in infrastructure automation, cloud security, and secure cloud architecture across multi-cloud environments.
-        </p>
-        <div class="hero-cta">
-          <a href="#projects" class="btn btn-fill">View Work →</a>
-          <a href="#contact" class="btn btn-ghost">Contact</a>
-        </div>
-      </div>
+  <div class="hero-top-bar">
+    <div class="htb-left">
+      <span>CLOUD_ENGINEER</span>
+      <span class="htb-tag">CLOUD_SECURITY</span>
+      <span class="htb-tag">IAC_SPECIALIST</span>
+    </div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--dim);letter-spacing:0.1em;">
+      AWS · HASHICORP · TERRAFORM
     </div>
   </div>
-  <div class="hero-bottom">
-    <div class="hero-certs-preview">
-      <span class="cert-pill aws">AWS SAA</span>
-      <span class="cert-pill aws">AWS Security</span>
-      <span class="cert-pill tf">AWS Networking</span>
+
+  <div class="hero-name-section">
+    <div class="hero-glow"></div>
+    <div class="hero-pre">ENGINEER.IDENTITY &nbsp;/&nbsp; CLOUD + SECURITY + IAC</div>
+
+    <h1 class="hero-name">
+      <span class="hn-row">
+        <span class="hn-emircan">
+          <span class="hn-emir">EMIR</span><span class="hn-can">CAN</span>
+        </span>
+      </span>
+      <span class="hn-row">
+        <span class="hn-ozkara">
+          <span class="hn-oz">ÖZ</span><span class="hn-kara">KARA</span>
+        </span>
+      </span>
+    </h1>
+
+    <p class="hero-tagline">
+      Designing &amp; securing <span>AWS infrastructure</span> —
+      every resource provisioned with <span>Terraform</span>,
+      every layer hardened with <span>cloud security</span> best practices.
+    </p>
+
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-cyan">[ VIEW PROJECTS ]</a>
+      <a href="#contact" class="btn btn-ghost">[ CONTACT ]</a>
     </div>
-    <div style="font-size:0.98rem;color:var(--mid);font-weight:300;">
-      4 Active Certifications &nbsp;·&nbsp; AWS ·&nbsp;AZURE
+  </div>
+
+  <div class="hero-bottom-bar">
+    <div class="hbb-cell">
+      <div class="hbb-n">3</div>
+      <div class="hbb-l">Active Certs</div>
+    </div>
+    <div class="hbb-cell">
+      <div class="hbb-n">AWS</div>
+      <div class="hbb-l">Primary Platform</div>
+    </div>
+    <div class="hbb-cell">
+      <div class="hbb-n">100%</div>
+      <div class="hbb-l">IaC Coverage</div>
+    </div>
+    <div class="hbb-cell">
+      <div class="hbb-n">0</div>
+      <div class="hbb-l">Manual Deploys</div>
     </div>
   </div>
 </section>
 
-<!-- STRIP -->
-<div class="strip">
-  <div class="strip-inner">
-    <div class="strip-item">AWS <span>✦</span></div>
-    <div class="strip-item">AZURE <span>✦</span></div>
-    <div class="strip-item">Terraform <span>✦</span></div>
-    <div class="strip-item">Cloud Security <span>✦</span></div>
-    <div class="strip-item">Kubernetes <span>✦</span></div>
-    <div class="strip-item">IaC <span>✦</span></div>
-    <div class="strip-item">DevSecOps <span>✦</span></div>
-    <div class="strip-item">AWS <span>✦</span></div>
-    <div class="strip-item">AZURE <span>✦</span></div>
-    <div class="strip-item">Terraform <span>✦</span></div>
-    <div class="strip-item">Cloud Security <span>✦</span></div>
-    <div class="strip-item">Kubernetes <span>✦</span></div>
-    <div class="strip-item">IaC <span>✦</span></div>
-    <div class="strip-item">DevSecOps <span>✦</span></div>
-    <div class="strip-item">AWS <span>✦</span></div>
-    <div class="strip-item">AZURE <span>✦</span></div>
-    <div class="strip-item">Terraform <span>✦</span></div>
-    <div class="strip-item">Cloud Security <span>✦</span></div>
-    <div class="strip-item">Kubernetes <span>✦</span></div>
-    <div class="strip-item">IaC <span>✦</span></div>
-    <div class="strip-item">DevSecOps <span>✦</span></div>
-  </div>
-</div>
-
 <!-- ABOUT -->
-<section id="about">
-  <div class="section-inner">
-    <div class="section-header">
-      <div>
-        <div class="section-num">01 — About</div>
-        <h2 class="section-title">Who<br>I Am</h2>
-      </div>
-      <p class="section-subtitle">Cloud engineer with a passion for resilient, secure, and fully automated infrastructure.</p>
+<section id="about" class="section">
+  <div class="s-head">
+    <div class="s-label">
+      <div class="s-num">// 01</div>
+      <div class="s-title">ABOUT</div>
     </div>
+    <div class="s-info">
+      <p class="s-sub">Cloud engineer. Security-minded. Infrastructure-first. Everything is code.</p>
+    </div>
+  </div>
+  <div class="s-body">
     <div class="about-grid">
       <div class="about-text">
-        <p>I'm <strong>Emircan Özkara</strong>, a cloud engineer who designs and automates production-grade infrastructure across AWS. I treat infrastructure as software — versioned, tested, and built to last.</p>
-        <p>With certifications spanning <strong>cloud architecture, security, and development</strong>, I bring a full-stack cloud perspective — from designing IAM policies and VPC architectures to deploying microservices on Kubernetes using GitOps pipelines.</p>
-        <p>My toolkit centers on <strong>Terraform</strong> for all infrastructure provisioning, ensuring repeatable, drift-free deployments across environments. I'm equally fluent in the security side — implementing zero trust, compliance controls, and automated threat response.</p>
+        <p>I'm <strong>Emircan Özkara</strong> — a cloud engineer focused on building and securing AWS infrastructure using Terraform. No manual configuration. No drift. Every resource is version-controlled.</p>
+        <p>My <strong>AWS Security Specialty</strong> reflects a genuine focus on identity management, data protection, threat detection and automated incident response. Security isn't an afterthought — it's designed in from the start.</p>
+        <p>I believe cloud infrastructure should be <strong>reproducible, auditable, and drift-free</strong>. If it can't be expressed as Terraform, it shouldn't exist.</p>
       </div>
-      <div class="about-stats">
-        <div class="stat-box"><div class="stat-n">3</div><div class="stat-l">Cloud Certs</div></div>
-        <div class="stat-box"><div class="stat-n">2+</div><div class="stat-l">Cloud Platforms</div></div>
-        <div class="stat-box"><div class="stat-n">100%</div><div class="stat-l">IaC Coverage</div></div>
-        <div class="stat-box"><div class="stat-n">5+</div><div class="stat-l">Production Level Projects</div></div>
+      <div class="stat-panel">
+        <div class="stat-cell reveal"><div class="stat-n">3</div><div class="stat-l">Certifications</div></div>
+        <div class="stat-cell reveal"><div class="stat-n">AWS</div><div class="stat-l">Primary Cloud</div></div>
+        <div class="stat-cell reveal"><div class="stat-n">100%</div><div class="stat-l">IaC Coverage</div></div>
+        <div class="stat-cell reveal"><div class="stat-n">0</div><div class="stat-l">Manual Deploys</div></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CERTIFICATIONS -->
-<section id="certifications">
-  <div class="section-inner">
-    <div class="section-header">
+<section id="certifications" class="section">
+  <div class="s-head">
+    <div class="s-label">
+      <div class="s-num">// 02</div>
+      <div class="s-title">CERTS</div>
+    </div>
+    <div class="s-info">
+      <p class="s-sub">Architecture · Security · Automation — the three pillars.</p>
+      <a href="https://www.credly.com/users/grandeemir" target="_blank" rel="noopener"
+        style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--cyan);text-decoration:none;letter-spacing:0.1em;border-bottom:var(--bdr);padding-bottom:0.1rem;white-space:nowrap;">
+        VIEW ON CREDLY →
+      </a>
+    </div>
+  </div>
+  <div class="cert-row">
+
+    <div class="cert-card aws-c reveal">
+      <img class="cert-badge-img"
+        src="https://images.credly.com/size/340x340/images/0e284c3f-5164-4b21-8660-0d84737941bc/image.png"
+        alt="AWS Solutions Architect Associate"
+        onerror="this.style.display='none'">
+      <div class="cert-vendor aws"><span class="cert-vendor-dot"></span>AMAZON WEB SERVICES</div>
       <div>
-        <div class="section-num">02 — Certifications</div>
-        <h2 class="section-title">Creden<br>tials</h2>
+        <div class="cert-name">Solutions Architect Associate</div>
+        <div class="cert-code">SAA-C03</div>
       </div>
-      <p class="section-subtitle">Industry-recognized certifications across architecture, security, and cloud development.</p>
     </div>
-    <div class="cert-grid">
 
-      <div class="cert-card">
-        <img class="cert-badge-img" src="https://images.credly.com/size/340x340/images/0e284c3f-5164-4b21-8660-0d84737941bc/image.png" alt="AWS Solutions Architect Associate" onerror="this.style.display='none'">
-        <div class="cert-vendor-badge aws">AWS</div>
-        <div>
-          <div class="cert-name">Solutions Architect Associate</div>
-          <div class="cert-code-label">SAA-C03</div>
-        </div>
+    <div class="cert-card aws-c reveal">
+      <img class="cert-badge-img"
+        src="https://images.credly.com/size/340x340/images/53acdae5-d69f-4dda-b650-d02ed7a50dd7/image.png"
+        alt="AWS Security Specialty"
+        onerror="this.style.display='none'">
+      <div class="cert-vendor aws"><span class="cert-vendor-dot"></span>AMAZON WEB SERVICES</div>
+      <div>
+        <div class="cert-name">Certified Security — Specialty</div>
+        <div class="cert-code">SCS-C02</div>
       </div>
-
-      <div class="cert-card">
-        <img class="cert-badge-img" src="https://images.credly.com/size/340x340/images/53acdae5-d69f-4dda-b650-d02ed7a50dd7/image.png" alt="AWS Security Specialty" onerror="this.style.display='none'">
-        <div class="cert-vendor-badge aws">AWS</div>
-        <div>
-          <div class="cert-name">Certified Security Specialty</div>
-          <div class="cert-code-label">SCS-C03</div>
-        </div>
-      </div>
-
-      <div class="cert-card">
-        <img class="cert-badge-img" src="https://learn.microsoft.com/en-us/media/learn/certification/badges/microsoft-certified-associate-badge.svg" alt="Azure Security Engineer Associate" onerror="this.style.display='none'">
-        <div class="cert-vendor-badge aws">Azure</div>
-        <div>
-          <div class="cert-name">Azure Administrator Associate</div>
-          <div class="cert-code-label">AZ-104</div>
-        </div>
-      </div>
-      
-       <div class="cert-card">
-        <img class="cert-badge-img" src="https://learn.microsoft.com/en-us/media/learn/certification/badges/microsoft-certified-associate-badge.svg" alt="Azure Administrator Associate AZ-104" onerror="this.style.display='none'">
-        <div class="cert-vendor-badge azure">Azure</div>
-        <div>
-          <div class="cert-name">Azure Security Engineer Associate</div>
-          <div class="cert-code-label">AZ-500</div>
-        </div>
-      </div>
-      
     </div>
+
+    <div class="cert-card tf-c reveal">
+      <img class="cert-badge-img"
+        src="https://images.credly.com/size/340x340/images/0dc62494-dc94-469a-83af-e35309f27356/blob"
+        alt="HashiCorp Terraform Associate"
+        onerror="this.style.display='none'">
+      <div class="cert-vendor tf"><span class="cert-vendor-dot"></span>HASHICORP</div>
+      <div>
+        <div class="cert-name">Terraform Associate</div>
+        <div class="cert-code">TA-003</div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <!-- PROJECTS -->
-<section id="projects">
-  <div class="section-inner">
-    <div class="section-header">
-      <div>
-        <div class="section-num">03 — Projects</div>
-        <h2 class="section-title">Selected<br>Work</h2>
-      </div>
-      <p class="section-subtitle">Infrastructure projects spanning multi-cloud architecture, security, and platform engineering.</p>
+<section id="projects" class="section">
+  <div class="s-head">
+    <div class="s-label">
+      <div class="s-num">// 03</div>
+      <div class="s-title">PROJECTS</div>
     </div>
-    <div class="projects-list">
+    <div class="s-info">
+      <p class="s-sub">AWS infrastructure · cloud security · Terraform IaC.</p>
+    </div>
+  </div>
+  <div class="s-body" style="padding:0;">
+    <div class="proj-list">
 
-      <a href="#" class="project-row">
-        <div class="project-num">01</div>
-        <div class="project-body">
-          <div class="project-title">Multi-Region AWS Landing Zone</div>
-          <p class="project-desc">Fully automated AWS Organization with account vending, SCPs, centralized logging, and cross-account networking via Terraform modules. Supports 50+ workload accounts across 3 regions.</p>
-          <div class="project-tags">
-            <span class="ptag aws">AWS</span><span class="ptag tf">Terraform</span><span class="ptag sec">Security</span><span class="ptag k8s">Organizations</span>
+      <a href="#" class="proj-item reveal">
+        <div class="pi-num">01</div>
+        <div class="pi-body">
+          <div class="pi-title">Multi-Region AWS Landing Zone</div>
+          <p class="pi-desc">Full AWS Organization with automated account vending, SCPs, centralized CloudTrail, and cross-account VPC networking — provisioned with reusable Terraform modules across 3 regions.</p>
+          <div class="pi-tags">
+            <span class="ptag aws">AWS Orgs</span>
+            <span class="ptag tf">Terraform</span>
+            <span class="ptag sec">SCPs</span>
+            <span class="ptag iac">CloudTrail</span>
           </div>
         </div>
-        <div class="project-arrow">↗</div>
+        <div class="pi-arrow">↗</div>
       </a>
 
-      <a href="#" class="project-row">
-        <div class="project-num">02</div>
-        <div class="project-body">
-          <div class="project-title">Zero Trust Security on AWS</div>
-          <p class="project-desc">Implemented zero trust architecture using VPC Lattice, IAM Identity Center, and GuardDuty. Automated threat response pipelines via Lambda and Security Hub integrations.</p>
-          <div class="project-tags">
-            <span class="ptag aws">AWS</span><span class="ptag sec">Zero Trust</span><span class="ptag sec">GuardDuty</span><span class="ptag tf">Terraform</span>
+      <a href="#" class="proj-item reveal">
+        <div class="pi-num">02</div>
+        <div class="pi-body">
+          <div class="pi-title">Zero Trust Architecture on AWS</div>
+          <p class="pi-desc">Zero trust using VPC Lattice, IAM Identity Center, and GuardDuty. Automated threat response via Lambda and Security Hub. Full east-west traffic encryption.</p>
+          <div class="pi-tags">
+            <span class="ptag aws">AWS</span>
+            <span class="ptag sec">Zero Trust</span>
+            <span class="ptag sec">GuardDuty</span>
+            <span class="ptag tf">Terraform</span>
           </div>
         </div>
-        <div class="project-arrow">↗</div>
+        <div class="pi-arrow">↗</div>
       </a>
 
-      <a href="#" class="project-row">
-        <div class="project-num">03</div>
-        <div class="project-body">
-          <div class="project-title">Azure AKS Microservices Platform</div>
-          <p class="project-desc">Production Kubernetes platform on AKS with API Management, Azure AD workload identity, Key Vault CSI driver, and full GitOps via ArgoCD.</p>
-          <div class="project-tags">
-            <span class="ptag azure">Azure</span><span class="ptag k8s">Kubernetes</span><span class="ptag tf">Terraform</span><span class="ptag k8s">GitOps</span>
+      <a href="#" class="proj-item reveal">
+        <div class="pi-num">03</div>
+        <div class="pi-body">
+          <div class="pi-title">Serverless Event Pipeline</div>
+          <p class="pi-desc">Event-driven pipeline using Lambda, Kinesis, and DynamoDB — 10M+ events/day. Fully Terraformed with CloudWatch observability and KMS encryption at rest.</p>
+          <div class="pi-tags">
+            <span class="ptag aws">Lambda</span>
+            <span class="ptag aws">Kinesis</span>
+            <span class="ptag iac">KMS</span>
+            <span class="ptag tf">Terraform</span>
           </div>
         </div>
-        <div class="project-arrow">↗</div>
+        <div class="pi-arrow">↗</div>
       </a>
 
-      <a href="#" class="project-row">
-        <div class="project-num">04</div>
-        <div class="project-body">
-          <div class="project-title">Serverless Event Pipeline</div>
-          <p class="project-desc">Event-driven data pipeline processing 10M+ events/day using Lambda, Kinesis Data Streams, and DynamoDB. Full observability via CloudWatch with automated alerting.</p>
-          <div class="project-tags">
-            <span class="ptag aws">AWS</span><span class="ptag k8s">Serverless</span><span class="ptag tf">Terraform</span><span class="ptag py">Python</span>
+      <a href="#" class="proj-item reveal">
+        <div class="pi-num">04</div>
+        <div class="pi-body">
+          <div class="pi-title">AWS Security Posture Automation</div>
+          <p class="pi-desc">Terraform-driven CIS AWS Benchmark baseline — Security Hub, Config rules, IAM Access Analyzer, and auto-remediation Lambda functions enforcing compliance at scale.</p>
+          <div class="pi-tags">
+            <span class="ptag sec">Security Hub</span>
+            <span class="ptag sec">AWS Config</span>
+            <span class="ptag iac">CIS Benchmark</span>
+            <span class="ptag tf">Terraform</span>
           </div>
         </div>
-        <div class="project-arrow">↗</div>
+        <div class="pi-arrow">↗</div>
       </a>
 
-      <a href="#" class="project-row">
-        <div class="project-num">05</div>
-        <div class="project-body">
-          <div class="project-title">Enterprise GitOps CI/CD Framework</div>
-          <p class="project-desc">Standardized GitOps framework using GitHub Actions, Terraform Cloud, and ArgoCD. Includes automated security scanning, drift detection, policy enforcement, and rollback.</p>
-          <div class="project-tags">
-            <span class="ptag tf">Terraform</span><span class="ptag k8s">GitOps</span><span class="ptag sec">DevSecOps</span><span class="ptag k8s">ArgoCD</span>
+      <a href="#" class="proj-item reveal">
+        <div class="pi-num">05</div>
+        <div class="pi-body">
+          <div class="pi-title">Terraform Module Library</div>
+          <p class="pi-desc">Opinionated Terraform modules for VPCs, IAM roles, S3, and RDS — enforcing encryption, tagging standards, and least-privilege by default across all AWS deployments.</p>
+          <div class="pi-tags">
+            <span class="ptag tf">Terraform</span>
+            <span class="ptag iac">IaC</span>
+            <span class="ptag sec">Least Privilege</span>
+            <span class="ptag aws">AWS</span>
           </div>
         </div>
-        <div class="project-arrow">↗</div>
+        <div class="pi-arrow">↗</div>
       </a>
 
     </div>
@@ -446,100 +825,91 @@ footer span { color:var(--lime); }
 </section>
 
 <!-- CONTACT -->
-<section id="contact">
-  <div class="section-inner">
-    <div class="section-header">
-      <div>
-        <div class="section-num">04 — Contact</div>
-        <h2 class="section-title">Let's<br>Build</h2>
-      </div>
-      <p class="section-subtitle">Open to cloud architecture roles, consulting, and interesting infrastructure challenges.</p>
+<section id="contact" class="section">
+  <div class="s-head">
+    <div class="s-label">
+      <div class="s-num">// 04</div>
+      <div class="s-title">CONTACT</div>
     </div>
-    <a href="mailto:contact@emircanozkara.dev" class="contact-big">contact@emircanozkara.dev</a>
-    <div class="contact-links">
-      <a href="https://www.linkedin.com/in/grandeemir/" target="_blank" rel="noopener" class="contact-link">
-        <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
-        LinkedIn
-      </a>
-      <a href="https://github.com/grandeemir" target="_blank" rel="noopener" class="contact-link">
-        <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg></span>
-        GitHub
-      </a>
-      <a href="https://medium.com/@grandeemir" target="_blank" rel="noopener" class="contact-link">
-        <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"> <path d="M2 5.5c0-.276.224-.5.5-.5h19c.276 0 .5.224.5.5v13c0 .276-.224.5-.5.5h-19a.5.5 0 0 1-.5-.5v-13zm4.75 9.75c1.933 0 3.5-1.79 3.5-4s-1.567-4-3.5-4-3.5 1.79-3.5 4 1.567 4 3.5 4zm6.5-.25c.966 0 1.75-1.567 1.75-3.5s-.784-3.5-1.75-3.5-1.75 1.567-1.75 3.5.784 3.5 1.75 3.5zm3.5-.25c.483 0 .875-1.119.875-2.5s-.392-2.5-.875-2.5-.875 1.119-.875 2.5.392 2.5.875 2.5z"/></svg></span>
-        Medium
-      </a>
-      <a href="https://www.credly.com/users/grandeemir" target="_blank" rel="noopener" class="contact-link">
-        <span class="icon">🏅</span>
-        Credly Badges
-      </a>
+    <div class="s-info">
+      <p class="s-sub">Open to cloud engineering and cloud security roles.</p>
+    </div>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-left">
+      <a href="mailto:emircan@example.com" class="big-email">EMIRCAN<br>@EXAMPLE<br>.COM</a>
+      <div class="soc-list">
+        <a href="https://www.linkedin.com/in/grandeemir/" target="_blank" rel="noopener" class="soc-link">
+          <div class="soc-link-l">
+            <div class="soc-ico">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <span>LINKEDIN — /IN/GRANDEEMIR</span>
+          </div>
+          <span class="soc-arr">↗</span>
+        </a>
+        <a href="https://github.com/grandeemir" target="_blank" rel="noopener" class="soc-link">
+          <div class="soc-link-l">
+            <div class="soc-ico">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+            </div>
+            <span>GITHUB — /GRANDEEMIR</span>
+          </div>
+          <span class="soc-arr">↗</span>
+        </a>
+        <a href="https://www.credly.com/users/grandeemir" target="_blank" rel="noopener" class="soc-link">
+          <div class="soc-link-l">
+            <div class="soc-ico" style="font-size:0.85rem;">🏅</div>
+            <span>CREDLY — VERIFIED BADGES</span>
+          </div>
+          <span class="soc-arr">↗</span>
+        </a>
+      </div>
+    </div>
+    <div class="contact-right">
+      <p>Open to <strong>cloud engineering</strong> and <strong>cloud security</strong> roles. I work best on teams that treat infrastructure quality and security seriously.</p>
+      <p>Whether building a new AWS environment from scratch, hardening an existing one, or needing Terraform expertise — <strong>let's talk.</strong></p>
+      <div class="avail">SYS_STATUS: AVAILABLE</div>
     </div>
   </div>
 </section>
 
 <footer>
-  <span>Emircan Ozkara</span> — Cloud Engineer / Cloud Security Engineer / DevSecOps Engineer<br>
-  <span>2026</span>
+  <div class="f-logo"><span>EMIRCAN.ÖZKARA</span> — CLOUD ENGINEER</div>
+  <div class="f-right">AWS · TERRAFORM · CLOUD_SECURITY · 2025</div>
 </footer>
 
 <script>
-// ══ CURSOR ══
-// Approach: set CSS custom properties --cx / --cy on the element directly.
-// The CSS translate() reads them. No left/top juggling. No centering issues.
-const cur = document.getElementById('cur');
-let raf, tx = -200, ty = -200, cx = -200, cy = -200;
+// ── CURSOR ──
+const cur   = document.getElementById('cur');
+const ring  = document.querySelector('.cur-ring');
+let tx=-300,ty=-300,rx=-300,ry=-300;
 
 document.addEventListener('mousemove', e => {
-  tx = e.clientX;
-  ty = e.clientY;
-  // Show on first move
-  if (cur.style.opacity !== '1') cur.style.opacity = '1';
-}, { passive: true });
+  tx = e.clientX; ty = e.clientY;
+  cur.style.setProperty('--cx', tx+'px');
+  cur.style.setProperty('--cy', ty+'px');
+  if(cur.style.opacity!=='1'){ cur.style.opacity='1'; ring.style.opacity='1'; }
+},{passive:true});
 
-// Smooth outer ring follows with lerp; inner dot snaps instantly via CSS vars
-function loop() {
-  cx += (tx - cx) * 0.14;
-  cy += (ty - cy) * 0.14;
-  cur.style.setProperty('--cx', cx + 'px');
-  cur.style.setProperty('--cy', cy + 'px');
-  raf = requestAnimationFrame(loop);
-}
-loop();
+(function loop(){
+  rx+=(tx-rx)*0.1; ry+=(ty-ry)*0.1;
+  ring.style.setProperty('--rx', rx+'px');
+  ring.style.setProperty('--ry', ry+'px');
+  requestAnimationFrame(loop);
+})();
 
-// Hover grow on interactive elements
-document.querySelectorAll('a, button, .cert-card, .stat-box, .project-row').forEach(el => {
-  el.addEventListener('mouseenter', () => cur.classList.add('hov'),  { passive: true });
-  el.addEventListener('mouseleave', () => cur.classList.remove('hov'), { passive: true });
+document.querySelectorAll('a,button,.cert-card,.stat-cell,.proj-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('hov'),{passive:true});
+  el.addEventListener('mouseleave',()=>ring.classList.remove('hov'),{passive:true});
 });
 
-// Dark-zone detection (About + Contact + Footer → lime cursor)
-const darkEls = [document.querySelector('#about'), document.querySelector('#contact'), document.querySelector('footer')];
-function checkZone() {
-  const h = window.innerHeight;
-  const inDark = darkEls.some(el => {
-    if (!el) return false;
-    const r = el.getBoundingClientRect();
-    return r.top < h * 0.65 && r.bottom > h * 0.35;
-  });
-  document.body.classList.toggle('dz', inDark);
-}
-window.addEventListener('scroll', checkZone, { passive: true });
-checkZone();
-
-// ══ SCROLL REVEAL ══
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.style.opacity = '1';
-      e.target.style.transform = 'translateY(0)';
-    }
-  });
-}, { threshold: 0.07 });
-
-document.querySelectorAll('.cert-card, .project-row, .stat-box, .contact-link').forEach((el, i) => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(22px)';
-  el.style.transition = `opacity 0.5s ease ${i * 0.055}s, transform 0.5s ease ${i * 0.055}s`;
+// ── SCROLL REVEAL ──
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach((el,i)=>{
+  el.style.transitionDelay = `${(i%5)*0.07}s`;
   obs.observe(el);
 });
 </script>
