@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
       top: 0,
       width: '100%',
       zIndex: 1000,
-      backgroundColor: 'rgba(10, 25, 47, 0.85)',
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
       backdropFilter: 'blur(10px)',
       padding: '20px 50px',
       display: 'flex',

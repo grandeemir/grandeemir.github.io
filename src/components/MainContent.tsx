@@ -9,6 +9,14 @@ interface MediumPost {
 }
 
 const MainContent: React.FC = () => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+    e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+  };
+
   const projects = [
     {
       title: "Automated AWS Security Auditing",
@@ -79,7 +87,7 @@ const MainContent: React.FC = () => {
 
   return (
     <main className="main-content">
-      <section className="section" id="about">
+      <section className="section reveal" id="about">
         <div className="section-header">
           <h2>About</h2>
         </div>
@@ -91,12 +99,12 @@ const MainContent: React.FC = () => {
         </p>
       </section>
 
-      <section className="section" id="projects">
+      <section className="section reveal" id="projects">
         <div className="section-header">
           <h2>Projects</h2>
         </div>
         {projects.map((project, index) => (
-          <div key={index} className="project-card">
+          <div key={index} className="project-card reveal spotlight" onMouseMove={handleMouseMove}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
               <Folder size={24} color="var(--accent)" />
               <div style={{ display: 'flex', gap: '15px' }}>
@@ -115,7 +123,7 @@ const MainContent: React.FC = () => {
         ))}
       </section>
 
-      <section className="section" id="blog">
+      <section className="section reveal" id="blog">
         <div className="section-header">
           <h2>Blog Posts</h2>
         </div>
@@ -123,7 +131,7 @@ const MainContent: React.FC = () => {
           <p style={{ fontSize: '14px', opacity: 0.8 }}>Loading latest posts...</p>
         ) : blogPosts.length > 0 ? (
           blogPosts.map((post, index) => (
-            <div key={index} className="blog-card">
+            <div key={index} className="blog-card reveal spotlight" onMouseMove={handleMouseMove}>
               <p style={{ fontSize: '12px', color: 'var(--accent)', marginBottom: '5px', fontFamily: 'monospace' }}>
                 {post.date} • {post.readTime}
               </p>
