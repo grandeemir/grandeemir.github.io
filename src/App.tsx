@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import MainContent from './components/MainContent';
+import ProjectDetail from './components/ProjectDetail';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
@@ -85,7 +87,10 @@ function App() {
       </div>
       <div className="layout">
         <Sidebar />
-        <MainContent />
+        <Routes>
+          <Route path="/" element={<MainContent />} />
+          <Route path="/project/:repoName" element={<ProjectDetail />} />
+        </Routes>
       </div>
     </>
   );

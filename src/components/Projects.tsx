@@ -4,25 +4,25 @@ import { Folder, Terminal, ExternalLink } from 'lucide-react';
 const Projects: React.FC = () => {
   const projects = [
     {
-      title: "Secure 3 Tier Web Application",
-      description: "A serverless solution that automatically detects and remediates misconfigured S3 buckets and IAM policies in real-time using AWS Config and Lambda.",
-      tech: ["EC2", "S3", "RDS", "VPC", "ASG"],
-      github: "https://github.com",
-      link: "https://example.com"
+      title: "Zero-Trust Serverless Application",
+      description: "A Zero-Trust Secure File Vault built on AWS with defense-in-depth, featuring identity-based access control, automated threat remediation, and end-to-end encryption.",
+      tech: ["Terraform", "Lambda", "Cognito", "API Gateway", "DynamoDB"],
+      github: "https://github.com/grandeemir/Zero-Trust-Serverless-Application",
+      link: "https://github.com/grandeemir/Zero-Trust-Serverless-Application"
     },
     {
-      title: "Secure Serverless Architecture",
-      description: "Designed a resilient web architecture utilizing Amazon API Gateway, AWS WAF to block common exploits, and Amazon Cognito for secure user authentication.",
-      tech: ["AWS WAF", "Cognito", "API Gateway", "DynamoDB", "Lambda"],
-      github: "https://github.com",
-      link: "https://example.com"
+      title: "Secure 3-Tier Web App on AWS",
+      description: "A modular Terraform configuration that automatically deploys a secure, highly available 3-tier web application on AWS with private application and database layers.",
+      tech: ["Terraform", "EC2", "RDS", "VPC", "ALB"],
+      github: "https://github.com/grandeemir/Secure3TierWebApp-AWS",
+      link: "https://github.com/grandeemir/Secure3TierWebApp-AWS"
     },
     {
-      title: "IaC Deployment Pipeline",
-      description: "Developed a CI/CD pipeline using GitHub Actions and Terraform to deploy secure VPC architectures with strict security group rules and NACLs.",
-      tech: ["Terraform", "GitHub Actions", "AWS VPC", "S3"],
-      github: "https://github.com",
-      link: "https://example.com"
+      title: "AWS Security Monitoring",
+      description: "A production-grade security monitoring and SIEM pipeline focusing on continuous auditing and threat detection by forwarding security findings to Datadog.",
+      tech: ["Terraform", "CloudTrail", "AWS Config", "GuardDuty", "Datadog"],
+      github: "https://github.com/grandeemir/aws-security-monitoring",
+      link: "https://github.com/grandeemir/aws-security-monitoring"
     }
   ];
 

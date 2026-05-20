@@ -390,3 +390,104 @@ body, a, button {
 .blog-card:nth-child(2) { animation-delay: 0.6s; }
 .blog-card:nth-child(3) { animation-delay: 0.7s; }
 .blog-card:nth-child(4) { animation-delay: 0.8s; }
+
+/* Markdown Styling */
+.markdown-body {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.7;
+}
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+  color: var(--text-primary);
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.markdown-body h1 {
+  font-size: 2em;
+  border-bottom: 1px solid var(--bg-light-navy);
+  padding-bottom: .3em;
+}
+.markdown-body h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--bg-light-navy);
+  padding-bottom: .3em;
+}
+.markdown-body h3 {
+  font-size: 1.25em;
+}
+.markdown-body p {
+  margin-bottom: 16px;
+}
+.markdown-body a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+.markdown-body ul, .markdown-body ol {
+  padding-left: 2em;
+  margin-bottom: 16px;
+}
+.markdown-body li {
+  margin-bottom: 0.25em;
+}
+.markdown-body code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  font-family: monospace;
+}
+.markdown-body pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: var(--bg-navy);
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border: 1px solid var(--bg-light-navy);
+}
+.markdown-body pre code {
+  display: inline;
+  max-width: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+}
+.markdown-body blockquote {
+  padding: 0 1em;
+  color: #8b949e;
+  border-left: .25em solid var(--bg-light-navy);
+  margin-bottom: 16px;
+}
+.markdown-body img,
+.markdown-body svg {
+  max-width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  background-color: transparent;
+  vertical-align: middle;
+}
+.markdown-body table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  width: 100%;
+}
+.markdown-body table th, .markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid var(--bg-light-navy);
+}
+.markdown-body table tr {
+  background-color: transparent;
+  border-top: 1px solid var(--bg-light-navy);
+}
