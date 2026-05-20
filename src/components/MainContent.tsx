@@ -101,7 +101,7 @@ const MainContent: React.FC = () => {
           I am a dedicated Cloud Security Engineer with a strong focus on protecting organizational assets in the cloud. My expertise lies in designing and implementing secure, scalable architectures on AWS, following the Well-Architected Framework.
         </p>
         <p>
-          I believe that security is not a checkbox but a continuous process of improvement and automation. My goal is to build systems that are secure by design and resilient by nature.
+          My goal is to build systems that are secure by design and resilient by nature.
         </p>
       </section>
 
