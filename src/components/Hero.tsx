@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
     }}>
       <p style={{ color: 'var(--accent)', marginBottom: '20px', fontFamily: 'monospace' }}>Hi, my name is</p>
       <h1 style={{ fontSize: 'clamp(40px, 8vw, 80px)', fontWeight: 600, color: 'var(--white)' }}>
-        Cloud Security Engineer.
+        Cloud Engineer.
       </h1>
       <h2 style={{ fontSize: 'clamp(30px, 6vw, 60px)', color: 'var(--text-secondary)', marginTop: '5px' }}>
         I build secure & resilient cloud systems.

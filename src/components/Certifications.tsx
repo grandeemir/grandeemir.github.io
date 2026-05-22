@@ -9,7 +9,9 @@ const Certifications: React.FC = () => {
       date: "2023",
       id: "SAA-C03",
       color: "#FF9900"
-    },
+    }
+    /* 
+    ,
     {
       title: "AWS Certified Security – Specialty",
       issuer: "Amazon Web Services",
@@ -17,6 +19,7 @@ const Certifications: React.FC = () => {
       id: "SCS-C02",
       color: "#FF9900"
     }
+    */
   ];
 
   return (

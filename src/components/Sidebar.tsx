@@ -28,14 +28,14 @@ const Sidebar: React.FC = () => {
           <img src="https://avatars.githubusercontent.com/u/194475869?s=400&u=cff54627cc848c95786a584e668d41b27f642c08&v=4" alt="Emircan Özkara" />
         </div>
         <h1 className="sidebar-title">Emircan Özkara</h1>
-        <h2 className="sidebar-subtitle">Cloud Security Engineer</h2>
-        <p style={{ fontSize: '14px', maxWidth: '250px', marginBottom: '30px' }}>
+        <h2 className="sidebar-subtitle">Cloud Engineer</h2>
+        <p style={{ fontSize: '14px', maxWidth: '250px', marginBottom: '30px', textAlign: 'left' }}>
           Specializing in secure AWS architecture, DevSecOps automation, and continuous compliance.
         </p>
 
-        <div style={{ marginBottom: '30px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ marginBottom: '30px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
            <h3 style={{ fontSize: '14px', color: 'var(--accent)', marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}>Certifications</h3>
-           <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+           <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
              <a href="https://www.credly.com/badges/81befb0f-561b-432c-9da7-7d67f72b9144" target="_blank" rel="noopener noreferrer" title="AWS Solutions Architect Associate">
                {!imgError.saa ? (
                  <img 
@@ -52,6 +52,7 @@ const Sidebar: React.FC = () => {
                  </div>
                )}
              </a>
+             {/* 
              <a href="https://www.credly.com/org/amazon-web-services/badge/aws-certified-security-specialty" target="_blank" rel="noopener noreferrer" title="AWS Security Specialty">
                {!imgError.scs ? (
                  <img 
@@ -68,10 +69,11 @@ const Sidebar: React.FC = () => {
                  </div>
                )}
              </a>
+             */}
            </div>
         </div>
 
-        <div className="sidebar-links" style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '30px', flexWrap: 'wrap' }}>
+        <div className="sidebar-links" style={{ display: 'flex', justifyContent: 'flex-start', gap: '12px', marginTop: '30px', flexWrap: 'wrap' }}>
           <a href="https://github.com/grandeemir" target="_blank" rel="noopener noreferrer" title="GitHub">
             <Logos.GitHub />
           </a>
@@ -85,7 +87,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       <div style={{ marginTop: 'auto' }}>
-        <a href="mailto:hi@grandeemir.dev" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '14px' }}>
+        <a href="mailto:hi@grandeemir.dev" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px', fontSize: '14px' }}>
           <Mail size={18} />
           <span>get in touch</span>
         </a>

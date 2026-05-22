@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
         </div>
 
         <p style={{ marginTop: '30px', fontSize: '12px', fontFamily: 'monospace' }}>
-          Designed & Built by Cloud Security Engineer &copy; {new Date().getFullYear()}
+          Designed & Built by Cloud Engineer &copy; {new Date().getFullYear()}
         </p>
       </div>
     </footer>

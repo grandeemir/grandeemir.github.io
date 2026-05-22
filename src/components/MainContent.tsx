@@ -44,10 +44,11 @@ const MainContent: React.FC = () => {
           <h2>About</h2>
         </div>
         <p style={{ marginBottom: '20px' }}>
-          I am a dedicated Cloud Security Engineer with a strong focus on protecting organizational assets in the cloud. My expertise lies in designing and implementing secure, scalable architectures on AWS, following the Well-Architected Framework.
+          I build cloud infrastructure, and I break things to figure out how to secure them.
+          As a self-driven cloud engineer, I don't just collect certifications—I build the actual architecture. I spend my days working with AWS, writing infrastructure as code with Terraform, and designing zero-trust networks.
         </p>
         <p>
-          My goal is to build systems that are secure by design and resilient by nature.
+          No buzzwords, just hands-on engineering. Check out my repositories below to see what I mean.
         </p>
       </section>
 
