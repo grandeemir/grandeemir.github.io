@@ -30,7 +30,7 @@ const Sidebar: React.FC = () => {
         <h1 className="sidebar-title">Emircan Özkara</h1>
         <h2 className="sidebar-subtitle">Cloud Engineer</h2>
         <p style={{ fontSize: '14px', maxWidth: '250px', marginBottom: '30px', textAlign: 'left' }}>
-          Specializing in secure AWS architecture, DevSecOps automation, and continuous compliance.
+          Zero-trust mindset. Hands-on cloud engineering.
         </p>
 
         <div style={{ marginBottom: '30px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
