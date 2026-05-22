@@ -1,5 +1,5 @@
 import React from 'react';
-import { Terminal, Briefcase, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Terminal, Briefcase, ShieldCheck } from 'lucide-react';
 
 const Hero: React.FC = () => {
   return (
