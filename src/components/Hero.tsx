@@ -27,9 +27,6 @@ const Hero: React.FC = () => {
         <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn">
           <Briefcase size={24} />
         </a>
-        <a href="https://medium.com" target="_blank" rel="noopener noreferrer" title="Medium">
-          <ExternalLink size={24} />
-        </a>
         <a href="https://www.credly.com" target="_blank" rel="noopener noreferrer" title="Credly">
           <ShieldCheck size={24} />
         </a>

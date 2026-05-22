@@ -20,7 +20,6 @@ const Footer: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', marginTop: '60px', color: 'var(--text-secondary)' }}>
           <a href="https://github.com" target="_blank" rel="noopener noreferrer" title="GitHub"><Terminal size={20} /></a>
           <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn"><Briefcase size={20} /></a>
-          <a href="https://medium.com" target="_blank" rel="noopener noreferrer" title="Medium"><ExternalLink size={20} /></a>
           <a href="https://www.credly.com" target="_blank" rel="noopener noreferrer" title="Credly"><ShieldCheck size={20} /></a>
         </div>
 

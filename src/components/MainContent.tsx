@@ -1,13 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Terminal, ExternalLink, Folder } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-
-interface MediumPost {
-  title: string;
-  link: string;
-  pubDate: string;
-  description: string;
-}
 
 const MainContent: React.FC = () => {
   const navigate = useNavigate();
@@ -43,53 +36,6 @@ const MainContent: React.FC = () => {
       github: "https://github.com/grandeemir/aws-security-monitoring"
     }
   ];
-
-  const [blogPosts, setBlogPosts] = useState<any[]>([]);
-  const [loadingBlogs, setLoadingBlogs] = useState(true);
-
-  useEffect(() => {
-    const fetchMediumPosts = async () => {
-      try {
-        const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@grandeemir');
-        const data = await response.json();
-        
-        if (data && data.items) {
-          // Get the latest 5 items
-          const formattedPosts = data.items.slice(0, 5).map((item: MediumPost) => {
-            // Extract a brief excerpt by stripping HTML tags
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = item.description;
-            const textContent = tempDiv.textContent || tempDiv.innerText || '';
-            const excerpt = textContent.length > 150 ? textContent.substring(0, 150) + '...' : textContent;
-            
-            // Calculate approximate read time
-            const wordCount = textContent.trim().split(/\s+/).length;
-            const readTimeVal = Math.ceil(wordCount / 200);
-            const readTime = `${readTimeVal > 0 ? readTimeVal : 1} min read`;
-
-            // Format date
-            const dateObj = new Date(item.pubDate);
-            const date = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            
-            return {
-              title: item.title,
-              excerpt: excerpt,
-              date: date,
-              readTime: readTime,
-              link: item.link
-            };
-          });
-          setBlogPosts(formattedPosts);
-        }
-      } catch (error) {
-        console.error("Error fetching Medium posts:", error);
-      } finally {
-        setLoadingBlogs(false);
-      }
-    };
-
-    fetchMediumPosts();
-  }, []);
 
   return (
     <main className="main-content">
@@ -133,30 +79,6 @@ const MainContent: React.FC = () => {
             </div>
           </div>
         ))}
-      </section>
-
-      <section className="section reveal" id="blog">
-        <div className="section-header">
-          <h2>Blog Posts</h2>
-        </div>
-        {loadingBlogs ? (
-          <p style={{ fontSize: '14px', opacity: 0.8 }}>Loading latest posts...</p>
-        ) : blogPosts.length > 0 ? (
-          blogPosts.map((post, index) => (
-            <div key={index} className="blog-card reveal spotlight" onMouseMove={handleMouseMove}>
-              <p style={{ fontSize: '12px', color: 'var(--accent)', marginBottom: '5px', fontFamily: 'monospace' }}>
-                {post.date} • {post.readTime}
-              </p>
-              <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>{post.title}</h3>
-              <p style={{ fontSize: '14px', marginBottom: '15px' }}>{post.excerpt}</p>
-              <a href={post.link} target="_blank" rel="noopener noreferrer" style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                Read Article <ExternalLink size={14} />
-              </a>
-            </div>
-          ))
-        ) : (
-          <p style={{ fontSize: '14px', opacity: 0.8 }}>No posts found.</p>
-        )}
       </section>
 
       <footer style={{ textAlign: 'center', padding: '40px 0', fontSize: '12px', opacity: 0.6 }}>
